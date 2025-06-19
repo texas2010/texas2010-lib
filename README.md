@@ -4,7 +4,7 @@
 ![Prerequisite](https://img.shields.io/badge/node-%3E%3D20.6.0-blue.svg)
 [![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/texas2010/texas2010-lib#readme)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/texas2010/texas2010-lib/graphs/commit-activity)
-[![License: MIT](https://img.shields.io/github/license/texas2010/Texas2010's Library)](https://github.com/texas2010/texas2010-lib/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > Reuseable Services and helpers for Texas2010's projects
 
@@ -46,7 +46,7 @@ Feel free to check [issues page](https://github.com/texas2010/texas2010-lib/issu
 
 ## 📝 License
 
-Copyright © 2025 [texas2010](https://github.com/texas2010).
+Copyright © 2025 [texas2010](https://github.com/texas2010)
 
 This project is [MIT](LICENSE) licensed.
 
