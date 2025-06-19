@@ -46,7 +46,7 @@ Feel free to check [issues page](https://github.com/texas2010/texas2010-lib/issu
 
 ## 📝 License
 
-Copyright © 2025 [texas2010](https://github.com/texas2010).
+Copyright © 2025 [texas2010](https://github.com/texas2010)
 
 This project is [MIT](LICENSE) licensed.
 
