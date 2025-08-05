@@ -9,6 +9,7 @@
 
     /* Bundler mode */
     "declaration": true,
+    "declarationMap": true,
     "emitDeclarationOnly": true
 
     /* Linting */
