@@ -2,6 +2,7 @@
   "name": "@texas2010/lib",
   "version": "0.0.2",
   "description": "Reusable services and helpers for internal projects",
+  "keywords": [],
   "homepage": "https://github.com/texas2010/texas2010-lib",
   "bugs": {
     "url": "https://github.com/texas2010/texas2010-lib/issues"
@@ -9,7 +10,7 @@
   "private": true,
   "type": "module",
   "files": [
-    "build/"
+    "build"
   ],
   "types": "./build/index.d.ts",
   "main": "./build/index.js",
@@ -28,15 +29,16 @@
     }
   },
   "scripts": {
-    "dev:index": "VITECONFIG=index vite",
-    "dev:common": "VITECONFIG=common vite",
-    "dev:react": "VITECONFIG=react vite",
-    "dev": "npm-run-all --parallel dev:common dev:react dev:index",
+    "test:unit": "TEST_KIND=unit vitest --config vitest.config.ts",
+    "test:unit:watch": "TEST_KIND=unit vitest --config vitest.config.ts --watch",
+    "test:integration": "TEST_KIND=integration vitest --config vitest.config.ts",
+    "test:integration:watch": "TEST_KIND=integration vitest --config vitest.config.ts --watch",
+    "dev": "",
     "build:index": "tsc -p tsconfig.index.json && VITECONFIG=index vite build",
     "build:common": "tsc -p tsconfig.common.json && VITECONFIG=common vite build",
     "build:react": "tsc -p tsconfig.react.json && VITECONFIG=react vite build",
     "build": "npm-run-all build:common build:react build:index",
-    "ci": "npm run build",
+    "ci": "npm run build && npm run test:unit",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "npm run ci"
   },
@@ -57,7 +59,8 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.1",
     "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.3"
+    "vite-plugin-dts": "^4.5.3",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@types/node": "^22.15.14",
