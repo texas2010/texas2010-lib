@@ -1,3 +1,13 @@
+x-base-common: &base-common
+  environment:
+    - TEST_KIND=integration
+  networks:
+    - internal_net
+    - default
+  depends_on:
+    caddy: { condition: service_healthy }
+    verdaccio: { condition: service_healthy }
+
 services:
   caddy:
     build:
@@ -24,20 +34,24 @@ services:
       timeout: 5s
       retries: 30
 
-  base:
-    build: .
+  base_dev:
+    <<: *base-common
+    build:
+      context: .
+      target: dev
     command: npm run test:integration:watch
-    environment:
-      - TEST_KIND=integration
-    networks:
-      - internal_net
-      - default
-    depends_on:
-      caddy: { condition: service_healthy }
-      verdaccio: { condition: service_healthy }
+    profiles: ['dev']
     volumes:
       - ./integration:/apps/base/integration:rw
       - ./src:/apps/base/src:rw
+
+  base_test:
+    <<: *base-common
+    build:
+      context: .
+      target: test
+    command: npm run test:integration
+    profiles: ['test']
 
 networks:
   internal_net:

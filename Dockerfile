@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:22 AS base
 
 WORKDIR /apps/backend-project/
 RUN npm install --global fastify-cli
@@ -18,4 +18,8 @@ COPY vitest.config.ts tsconfig.* ./
 COPY src/ ./src/
 COPY integration/ ./integration/
 
+FROM base AS dev
 CMD ["npm","run","test:integration:watch"]
+
+FROM base AS test
+CMD ["npm","run","test:integration"]
