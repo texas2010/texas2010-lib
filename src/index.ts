@@ -1,1 +1,1 @@
-export * as common from './common/index.ts';
+export * as common from './common/';
