@@ -14,5 +14,5 @@
 
     /* Linting */
   },
-  "include": ["src/common"]
+  "include": ["./../src/common"]
 }

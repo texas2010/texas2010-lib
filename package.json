@@ -12,8 +12,8 @@
   "files": [
     "build"
   ],
-  "types": "./build/index.d.ts",
   "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "exports": {
     ".": {
       "import": "./build/index.js",
@@ -42,17 +42,22 @@
     "predev": "docker compose down -v --remove-orphans && docker compose --profile dev up -d --force-recreate base_dev",
     "dev": "bash -lc 'set -e; cleanup(){ docker compose rm -sf base_dev >/dev/null 2>&1 || true; docker compose down -v --remove-orphans || true; }; trap cleanup EXIT INT TERM; concurrently -n TEST,DOCKER \"vitest --watch\" \"docker compose logs -f base_dev\"'",
     "postdev": "docker compose down -v --remove-orphans",
-    "build:index": "tsc -p tsconfig.index.json && VITECONFIG=index vite build",
-    "build:common": "tsc -p tsconfig.common.json && VITECONFIG=common vite build",
-    "build:react": "tsc -p tsconfig.react.json && VITECONFIG=react vite build",
-    "build": "npm-run-all build:common build:react build:index",
+    "build:index": "tsc -p tsconfig.index.json",
+    "build:common": "tsc -p ./tsconfig/tsconfig.common.json",
+    "build:react": "tsc -p tsconfig.react.json",
+    "build-old": "npm-run-all build:common build:react build:index",
     "ci:unit": "npm run test:unit",
     "ci:build": "npm run build",
     "ci:integration": "docker compose --profile test up --build --abort-on-container-exit --exit-code-from base_test --force-recreate --remove-orphans",
     "ci:down": "docker compose down -v --remove-orphans",
     "ci": "npm run ci:unit && npm run ci:build && npm run ci:integration && npm run ci:down",
     "local-release": "changeset version && changeset publish",
-    "prepublishOnly": "npm run ci"
+    "prepublishOnly": "npm run ci",
+    "_note": "",
+    "clean": "rm -rf build/*",
+    "prebuild": "npm run clean",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json -w"
   },
   "engines": {
     "node": ">=20.6.0"
