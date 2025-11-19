@@ -21,7 +21,9 @@ export default defineConfig({
     dts({
       outDir: viteConfig === 'index' ? 'build' : `build/${viteConfig}`,
       entryRoot: `src/${viteConfig}`,
+      include: [`src/${viteConfig}`],
       insertTypesEntry: true,
+      // rollupTypes: true,
     }),
   ].filter(Boolean),
 
@@ -35,7 +37,10 @@ export default defineConfig({
     },
     outDir: viteConfig === 'index' ? 'build' : `build/${viteConfig}`,
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external:
+        viteConfig === 'react'
+          ? ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime']
+          : [],
     },
   },
 });
