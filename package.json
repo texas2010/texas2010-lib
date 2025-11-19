@@ -23,18 +23,27 @@
       "import": "./build/shared/index.js",
       "types": "./build/shared/index.d.ts"
     },
-    "./backend": {
-      "import": "./build/backend/index.js",
-      "types": "./build/backend/index.d.ts"
+    "./shared/*": {
+      "import": "./build/shared/*/index.js",
+      "types": "./build/shared/*/index.d.ts"
     },
     "./frontend": {
       "import": "./build/frontend/index.js",
       "types": "./build/frontend/index.d.ts"
     },
-    "./frontend/react": {
-      "import": "./build/frontend/react/index.js",
-      "types": "./build/frontend/react/index.d.ts"
-    }
+    "./frontend/*": {
+      "import": "./build/frontend/*/index.js",
+      "types": "./build/frontend/*/index.d.ts"
+    },
+    "./backend": {
+      "import": "./build/backend/index.js",
+      "types": "./build/backend/index.d.ts"
+    },
+    "./backend/*": {
+      "import": "./build/backend/*/index.js",
+      "types": "./build/backend/*/index.d.ts"
+    },
+    "./internal/*": null
   },
   "scripts": {
     "docker:up": "docker compose --profile dev up -d --force-recreate base_dev",
@@ -61,15 +70,9 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf build/*",
     "prebuild": "npm run clean",
-    "build:shared": "VITECONFIG=shared vite build",
-    "build:react": "VITECONFIG=react vite build",
-    "build:backend": "VITECONFIG=backend vite build",
-    "build:frontend": "VITECONFIG=frontend vite build",
-    "build": "npm-run-all build:shared build:backend build:frontend",
-    "build:ts": "tsc -p tsconfig2.json",
+    "build:ts": "tsc -p tsconfig.json && tsc-alias",
     "build:dts": "rollup -c rollup.dts.config.js",
-    "prebuild-new": "npm run clean",
-    "build-new": "npm-run-all build:ts build:dts"
+    "build": "npm-run-all build:ts build:dts"
   },
   "engines": {
     "node": ">=20.6.0"
@@ -77,25 +80,21 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.26.0",
-    "@types/react": "^19.1.4",
-    "@types/react-dom": "^19.1.5",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
     "concurrently": "^9.2.1",
     "eslint": "^9.26.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.1.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^4.53.2",
     "rollup-plugin-dts": "^6.2.3",
+    "tsc-alias": "^1.8.16",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.3",
     "vitest": "^3.2.4"
   },
   "dependencies": {
-    "@types/node": "^22.15.14",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
