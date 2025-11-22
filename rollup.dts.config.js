@@ -1,6 +1,12 @@
 import dts from 'rollup-plugin-dts';
 
-const entries = ['shared', 'frontend', 'backend'];
+const entries = [
+  'shared',
+  'frontend',
+  'frontend/react',
+  'backend',
+  'backend/comms-protocol',
+];
 
 export default entries.map((name) => ({
   input: `build/${name}/index.d.ts`,
@@ -8,5 +14,5 @@ export default entries.map((name) => ({
     file: `build/${name}/index.d.ts`,
     format: 'es',
   },
-  plugins: [dts()],
+  plugins: [dts({})],
 }));

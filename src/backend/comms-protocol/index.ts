@@ -1,1 +1,3 @@
-export const commsProtcol = 'commsProtcol';
+export const commsProtocol = 'commsProtocol';
+
+export * from './internal';
