@@ -1,17 +1,27 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@backend/*": ["backend/*"],
+      "@frontend/*": ["frontend/*"],
+      "@shared/*": ["shared/*"]
+    },
+
+    "rootDir": "src",
+    "outDir": "build-types",
+
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
 
     "strict": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
 
     "jsx": "react-jsx",
     "jsxImportSource": "react",
 
-    "noEmit": true
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "src/**/*.test.ts"]
