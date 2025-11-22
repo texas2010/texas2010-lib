@@ -1,3 +1,3 @@
-export const commsProtocol = 'commsProtocol';
+export { random } from '@backend/comms-protocol/randomFolder';
 
-export * from './internal';
+export const commsProtocol = 'commsProtocol';
