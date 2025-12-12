@@ -17,7 +17,6 @@ RUN npm ci
 COPY rollup.dts.config.js vite.config.ts vitest.config.ts tsconfig.* ./
 COPY src/ ./src/
 COPY integration/ ./integration/
-COPY scripts/ ./scripts/
 COPY config/ ./config/
 
 FROM base AS dev
