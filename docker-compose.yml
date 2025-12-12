@@ -24,6 +24,8 @@ services:
   verdaccio:
     image: verdaccio/verdaccio:6
     networks: [internal_net]
+    volumes:
+      - ./docker/verdaccio/config.yaml:/verdaccio/conf/config.yaml
     healthcheck:
       test:
         [
