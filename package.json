@@ -48,7 +48,7 @@
   },
   "scripts": {
     "test:unit": "TEST_KIND=unit vitest run --config vitest.config.ts",
-    "test:unit:watch": "TEST_KIND=unit vitest --config vitest.config.ts --watch",
+    "test:unit:watch": "TEST_KIND=unit vitest --config vitest.config.ts --watch --reporter tree",
     "local-release": "changeset version && changeset publish",
     "_note": "",
     "typecheck": "tsc --noEmit",
@@ -71,7 +71,7 @@
     "create-fake-files": "node integration/setup/create-fake-files.js",
     "pre:integration": "npm run build && npm run create-fake-files && npm run publish:fake && npm run install-package",
     "test:integration": "npm run pre:integration && vitest run --config vitest.config.ts",
-    "test:integration:watch": "npm run pre:integration && vitest --config vitest.config.ts --watch",
+    "test:integration:watch": "npm run pre:integration && vitest --config vitest.config.ts --watch --reporter=tree",
     "ci:unit": "npm run test:unit",
     "ci:build": "npm run build",
     "ci:integration": "docker compose --profile test up --build --abort-on-container-exit --exit-code-from base_test --force-recreate --remove-orphans",
