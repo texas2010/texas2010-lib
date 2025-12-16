@@ -7,10 +7,11 @@
   "bugs": {
     "url": "https://github.com/texas2010/texas2010-lib/issues"
   },
-  "private": true,
   "type": "module",
   "files": [
-    "build"
+    "build",
+    "README.md",
+    "LICENSE"
   ],
   "main": "./build/shared/index.js",
   "types": "./build/shared/index.d.ts",
@@ -46,33 +47,37 @@
     "./internal/*": null
   },
   "scripts": {
-    "docker:up": "docker compose --profile dev up -d --force-recreate base_dev",
-    "docker:down": "docker compose down -v --remove-orphans",
-    "docker:logs": "docker compose logs -f",
-    "docker:dev:logs": "docker compose logs -f base_dev",
-    "docker:test:logs": "docker compose logs -f base_test",
-    "docker:restart": "docker compose down -v --remove-orphans && docker compose --profile dev up -d --force-recreate base_dev",
     "test:unit": "TEST_KIND=unit vitest run --config vitest.config.ts",
-    "test:unit:watch": "TEST_KIND=unit vitest --config vitest.config.ts --watch",
-    "test:integration": "TEST_KIND=integration vitest run --config vitest.config.ts",
-    "test:integration:watch": "TEST_KIND=integration vitest --config vitest.config.ts --watch",
-    "predev": "docker compose down -v --remove-orphans && docker compose --profile dev up -d --force-recreate base_dev",
-    "dev": "bash -lc 'set -e; cleanup(){ docker compose rm -sf base_dev >/dev/null 2>&1 || true; docker compose down -v --remove-orphans || true; }; trap cleanup EXIT INT TERM; concurrently -n TEST,DOCKER \"vitest --watch\" \"docker compose logs -f base_dev\"'",
-    "postdev": "docker compose down -v --remove-orphans",
+    "test:unit:watch": "TEST_KIND=unit vitest --config vitest.config.ts --watch --reporter tree",
+    "local-release": "changeset version && changeset publish",
+    "_note": "",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf build/*",
+    "prebuild": "npm run clean",
+    "build:js": "vite build",
+    "build:types": "tsc --emitDeclarationOnly -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "build:dts": "rollup -c rollup.dts.config.js",
+    "build": "npm-run-all build:js build:types build:dts",
+    "docker:up": "docker compose --profile dev up -d --force-recreate base_dev",
+    "docker:down": "docker compose --profile dev down -v --remove-orphans",
+    "docker:logs": "docker compose --profile dev logs -f",
+    "docker:dev:logs": "docker compose --profile dev logs -f base_dev",
+    "docker:restart": "npm run docker:down && npm run docker:up",
+    "docker:build": "docker compose build --no-cache base_dev",
+    "predev": "npm run docker:down && npm run docker:build && npm run docker:up",
+    "dev": "trap 'docker compose --profile dev down -v --remove-orphans || true' EXIT INT TERM; docker compose --profile dev logs -f base_dev",
+    "publish:fake": "node integration/setup/publish.js",
+    "install-package": "node integration/setup/install-package.js",
+    "create-fake-files": "node integration/setup/create-fake-files.js",
+    "pre:integration": "npm run build && npm run create-fake-files && npm run publish:fake && npm run install-package",
+    "test:integration": "npm run pre:integration && vitest run --config vitest.config.ts",
+    "test:integration:watch": "npm run pre:integration && vitest --config vitest.config.ts --watch --reporter=tree",
     "ci:unit": "npm run test:unit",
     "ci:build": "npm run build",
     "ci:integration": "docker compose --profile test up --build --abort-on-container-exit --exit-code-from base_test --force-recreate --remove-orphans",
     "ci:down": "docker compose down -v --remove-orphans",
     "ci": "npm run ci:unit && npm run ci:build && npm run ci:integration && npm run ci:down",
-    "local-release": "changeset version && changeset publish",
-    "prepublishOnly": "npm run ci",
-    "_note": "",
-    "typecheck": "tsc --noEmit",
-    "clean": "rm -rf build/*",
-    "prebuild": "npm run clean",
-    "build:ts": "tsc -p tsconfig.json && tsc-alias",
-    "build:dts": "rollup -c rollup.dts.config.js",
-    "build": "npm-run-all build:ts build:dts"
+    "prepublishOnly": "npm run ci"
   },
   "engines": {
     "node": ">=20.6.0"
@@ -80,27 +85,32 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.26.0",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.6",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.5",
+    "@vitejs/plugin-react": "^5.1.1",
     "concurrently": "^9.2.1",
     "eslint": "^9.26.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.1.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^4.53.2",
     "rollup-plugin-dts": "^6.2.3",
     "tsc-alias": "^1.8.16",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.1",
-    "vitest": "^3.2.4"
+    "vite": "^7.2.4",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.13"
   },
   "dependencies": {
+    "@types/node": "^22.15.14",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/texas2010/texas2010-lib.git"
+    "url": "git+https://github.com/texas2010/texas2010-lib.git"
   },
   "author": "texas2010",
   "license": "MIT"
