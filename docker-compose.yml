@@ -12,7 +12,7 @@ services:
   caddy:
     build:
       context: .
-      dockerfile: Dockerfile.caddy
+      dockerfile: docker/Dockerfile.caddy
     networks: [internal_net]
     expose: ['2019']
     healthcheck:
@@ -22,8 +22,12 @@ services:
       retries: 10
 
   verdaccio:
-    image: verdaccio/verdaccio:5
-    networks: [internal_net]
+    image: verdaccio/verdaccio:6
+    networks:
+      - internal_net
+      - default
+    volumes:
+      - ./docker/verdaccio/config.yaml:/verdaccio/conf/config.yaml
     healthcheck:
       test:
         [
@@ -38,6 +42,7 @@ services:
     <<: *base-common
     build:
       context: .
+      dockerfile: docker/Dockerfile.base
       target: dev
     command: npm run test:integration:watch
     profiles: ['dev']
@@ -49,6 +54,7 @@ services:
     <<: *base-common
     build:
       context: .
+      dockerfile: docker/Dockerfile.base
       target: test
     command: npm run test:integration
     profiles: ['test']

@@ -1,0 +1,28 @@
+Fake Project
+    Create project
+        install deps
+        install lib in the project as first time
+        put fake file
+        build 
+        run fake file and get result
+
+
+Fake NPM 
+    Deploy package
+
+Run Dev
+    Pre Dev
+        docker:down - shut down docker
+        docker:build - rebuild image
+        docker:up - startup docker
+            npm run test:integration:watch
+                npm run pre:integration
+                    npm run build
+                    npm run create-fake-files
+                        node integration/setup/create-fake-files.js
+                    npm run publish:fake
+                        node integration/setup/publish.js
+                    npm run install-package
+                        node integration/setup/install-package.js
+                vitest --config vitest.config.ts --watch
+    Base_dev Logs

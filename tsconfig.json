@@ -1,9 +1,28 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.index.json" },
-    { "path": "./tsconfig.common.json" },
-    { "path": "./tsconfig.react.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@backend/*": ["backend/*"],
+      "@frontend/*": ["frontend/*"],
+      "@shared/*": ["shared/*"]
+    },
+
+    "rootDir": "src",
+    "outDir": "build-types",
+
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    "strict": true,
+    "skipLibCheck": true,
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "src/**/*.test.ts"]
 }
