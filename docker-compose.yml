@@ -1,0 +1,64 @@
+x-base-common: &base-common
+  environment:
+    - TEST_KIND=integration
+  networks:
+    - internal_net
+    - default
+  depends_on:
+    caddy: { condition: service_healthy }
+    verdaccio: { condition: service_healthy }
+
+services:
+  caddy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.caddy
+    networks: [internal_net]
+    expose: ['2019']
+    healthcheck:
+      test: ['CMD-SHELL', 'caddy version >/dev/null 2>&1 || exit 1']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  verdaccio:
+    image: verdaccio/verdaccio:6
+    networks:
+      - internal_net
+      - default
+    volumes:
+      - ./docker/verdaccio/config.yaml:/verdaccio/conf/config.yaml
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'node -e "require(''http'').get(''http://localhost:4873/-/ping'',r=>process.exit(r.statusCode===200?0:1)).on(''error'',()=>process.exit(1))"',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  base_dev:
+    <<: *base-common
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.base
+      target: dev
+    command: npm run test:integration:watch
+    profiles: ['dev']
+    volumes:
+      - ./integration:/apps/base/integration:rw
+      - ./src:/apps/base/src:rw
+
+  base_test:
+    <<: *base-common
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.base
+      target: test
+    command: npm run test:integration
+    profiles: ['test']
+
+networks:
+  internal_net:
+    internal: true

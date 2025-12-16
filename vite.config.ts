@@ -1,41 +1,30 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import dts from 'vite-plugin-dts';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
-const viteConfig = process.env.VITECONFIG ?? 'common';
+import { entryPoints } from './config/entry-points.js';
 
-const entryMap: Record<string, string> = {
-  index: resolve(__dirname, 'src/common/index.ts'),
-  common: resolve(__dirname, 'src/common/index.ts'),
-  react: resolve(__dirname, 'src/react/index.ts'),
-};
-
-if (!entryMap[viteConfig]) {
-  throw new Error(`Invalid VITECONFIG: "${viteConfig}"`);
-}
+const entryMap = Object.fromEntries(
+  entryPoints.map((key) => [key, resolve(__dirname, `src/${key}/index.ts`)])
+);
 
 export default defineConfig({
-  plugins: [
-    viteConfig === 'react' ? react() : null,
-    dts({
-      outDir: viteConfig === 'index' ? 'build' : `build/${viteConfig}`,
-      entryRoot: `src/${viteConfig}`,
-      insertTypesEntry: true,
-    }),
-  ].filter(Boolean),
-
+  plugins: [tsconfigPaths()],
   build: {
-    emptyOutDir: false,
+    emptyOutDir: true,
+    outDir: 'build',
     lib: {
-      entry: entryMap[viteConfig],
-      name: '@texas2010/lib',
+      entry: entryMap,
       formats: ['es'],
-      fileName: () => `index.js`,
+      fileName: (_, entryName) => `${entryName}/index.js`,
     },
-    outDir: viteConfig === 'index' ? 'build' : `build/${viteConfig}`,
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+      ],
     },
   },
 });

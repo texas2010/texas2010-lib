@@ -1,0 +1,20 @@
+# Dockerfile.caddy
+FROM caddy:2
+
+# Optional: make dir explicit (usually exists already)
+RUN mkdir -p /etc/caddy
+
+# Write the Caddyfile during build
+RUN cat > /etc/caddy/Caddyfile <<'EOF'
+{
+  admin :2019 {
+    origins caddy:2019
+  }
+}
+
+:80 {
+  respond "ok" 200
+}
+EOF
+
+CMD ["caddy","run","--config","/etc/caddy/Caddyfile","--adapter","caddyfile"]
