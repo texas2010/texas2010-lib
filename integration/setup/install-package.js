@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 
-import { run } from '../helpers/run-helper.js';
+import { execCommand } from '../../utils/execCommand.js';
 
 const root = process.cwd();
 
@@ -16,7 +16,7 @@ const backendProject = async () => {
   ensureDir(backendDir);
 
   console.log('[Install Package: Backend] Installing...');
-  run('npm install @texas2010/lib', { cwd: backendDir });
+  execCommand('npm install @texas2010/lib', { cwd: backendDir });
 
   console.log('[Install Package: Backend] Creating file...');
   const backendSrc = path.join(backendDir, 'src');
@@ -30,10 +30,10 @@ const backendProject = async () => {
   );
 
   console.log('[Install Package: Backend] Building...');
-  run('npm run build:ts', { cwd: backendDir });
+  execCommand('npm run build:ts', { cwd: backendDir });
 
   console.log('[Install Package: Backend] Running...');
-  const nodeResult = run('node dist/fake-file.js', { cwd: backendDir });
+  const nodeResult = execCommand('node dist/fake-file.js', { cwd: backendDir });
   if (!nodeResult.ok || !nodeResult.output.includes('12345')) process.exit(1);
 };
 
@@ -44,7 +44,7 @@ const frontendProject = async () => {
   ensureDir(frontendDir);
 
   console.log('[Install Package: Frontend] Installing...');
-  run('npm install @texas2010/lib', { cwd: frontendDir });
+  execCommand('npm install @texas2010/lib', { cwd: frontendDir });
 
   console.log('[Install Package: Frontend] Creating...');
   const frontendSrc = path.join(frontendDir, 'src');
@@ -70,10 +70,10 @@ const frontendProject = async () => {
   );
 
   console.log('[Install Package: Frontend] Building...');
-  run('npm run build:ssr', { cwd: frontendDir });
+  execCommand('npm run build:ssr', { cwd: frontendDir });
 
   console.log('[Install Package: Frontend] Running...');
-  const ssrResult = run('node dist/fake-file.ssr.js', {
+  const ssrResult = execCommand('node dist/fake-file.ssr.js', {
     cwd: frontendDir,
   });
   if (!ssrResult.ok || !ssrResult.output.includes('12345')) process.exit(1);

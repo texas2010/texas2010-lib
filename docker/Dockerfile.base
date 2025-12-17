@@ -15,9 +15,10 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY rollup.dts.config.js vite.config.ts vitest.config.ts tsconfig.* ./
-COPY src/ ./src/
-COPY integration/ ./integration/
 COPY config/ ./config/
+COPY integration/ ./integration/
+COPY src/ ./src/
+COPY utils ./utils/
 
 FROM base AS dev
 CMD ["npm","run","test:integration:watch"]
