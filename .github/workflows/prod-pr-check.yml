@@ -3,6 +3,8 @@ name: Prod PR checks
 on:
   pull_request:
     branches: [prod]
+  push:
+    branches: [prod]
 
 permissions:
   contents: read
