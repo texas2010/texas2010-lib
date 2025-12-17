@@ -1,0 +1,60 @@
+name: Prod PR checks
+
+on:
+  pull_request:
+    branches: [prod]
+
+permissions:
+  contents: read
+
+jobs:
+  version-and-npm-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - name: Compare version vs prod
+        run: |
+          set -euo pipefail
+
+          # version in the PR branch
+          PR_VERSION="$(node -p "require('./package.json').version")"
+          PKG_NAME="$(node -p "require('./package.json').name")"
+
+          # version currently on prod
+          git fetch origin prod:refs/remotes/origin/prod
+          PROD_VERSION="$(git show origin/prod:package.json | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).version")"
+
+          echo "Package: $PKG_NAME"
+          echo "PR version: $PR_VERSION"
+          echo "prod version: $PROD_VERSION"
+
+          if [ "$PR_VERSION" = "$PROD_VERSION" ]; then
+            echo "::error::Version was not bumped. package.json version in this PR matches prod ($PROD_VERSION)."
+            exit 1
+          fi
+
+      - name: Fail if version already exists on npm
+        run: |
+          set -euo pipefail
+
+          PKG_NAME="$(node -p "require('./package.json').name")"
+          PR_VERSION="$(node -p "require('./package.json').version")"
+
+          echo "Checking npm for $PKG_NAME@$PR_VERSION ..."
+
+          # If the version exists, npm view returns 0. If it doesn't, it returns non-zero.
+          if npm view "$PKG_NAME@$PR_VERSION" version >/dev/null 2>&1; then
+            echo "::error::This version already exists on npm: $PKG_NAME@$PR_VERSION. Bump the version (changeset version) and try again."
+            exit 1
+          fi
+
+          echo "OK: $PKG_NAME@$PR_VERSION is not published yet."
