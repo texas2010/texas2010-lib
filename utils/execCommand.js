@@ -8,12 +8,19 @@ export function execCommand(cmd, opts = {}) {
       ...opts,
     });
 
-    // Always echo output so your logs are not blind
-    console.log(output);
+    console.log(`$ ${cmd}`);
+
+    if (typeof output === 'string' && output.trim().length > 0) {
+      console.log(output);
+    }
 
     return { ok: true, output };
   } catch (err) {
-    const stderr = err.stdout?.toString() || err.message;
+    console.error(`$ ${cmd}`);
+
+    const stderr =
+      err.stdout?.toString() || err.stderr?.toString() || err.message;
+
     console.error(stderr);
 
     return { ok: false, output: stderr };
