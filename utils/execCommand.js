@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 
-export function run(cmd, opts = {}) {
+export function execCommand(cmd, opts = {}) {
   try {
     const output = execSync(cmd, {
       stdio: 'pipe',

@@ -77,7 +77,8 @@
     "ci:integration": "docker compose --profile test up --build --abort-on-container-exit --exit-code-from base_test --force-recreate --remove-orphans",
     "ci:down": "docker compose down -v --remove-orphans",
     "ci": "npm run ci:unit && npm run ci:build && npm run ci:integration && npm run ci:down",
-    "prepublishOnly": "npm run ci"
+    "prepublishOnly": "npm run ci",
+    "release": "node scripts/release.js"
   },
   "engines": {
     "node": ">=20.6.0"
