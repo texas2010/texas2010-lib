@@ -1,5 +1,34 @@
 import fs from 'node:fs';
+import fsp from 'node:fs/promises';
+import path from 'node:path';
 import { execCommand } from '../utils/execCommand.js';
+
+const checkChangesets = async () => {
+  const dir = path.resolve('.changeset');
+
+  let files;
+  try {
+    files = await fsp.readdir(dir);
+  } catch {
+    console.error('.changeset directory is missing');
+    process.exit(1);
+  }
+
+  const changesetFiles = files
+    .filter((name) => name.endsWith('.md'))
+    .filter((name) => name.toLowerCase() !== 'readme.md')
+    .sort();
+
+  if (changesetFiles.length === 0) {
+    console.error('No changeset files found');
+    process.exit(1);
+  }
+
+  console.log('Found changeset files:');
+  for (const name of changesetFiles) {
+    console.log(`- ${name}`);
+  }
+};
 
 console.log('Checking git state...');
 
@@ -22,35 +51,29 @@ if (statusResult.output.trim().length > 0) {
   process.exit(1);
 }
 
-/* 3. ensure unreleased changesets exist */
-const changesetStatusResult = execCommand(
-  'npx changeset status --verbose --since=main',
-  {
-    stdio: 'inherit',
-  }
-);
+/* 3. ensure release intent exists */
+await checkChangesets();
+
+/* 4. show changeset status (informational only) */
+const changesetStatusResult = execCommand('npx changeset status --verbose');
 if (!changesetStatusResult.ok) {
   console.error('No unreleased changesets found. Run `npx changeset` first.');
   process.exit(1);
 }
 
-/* 4. pull main */
-const pullResult = execCommand('git pull origin main', { stdio: 'inherit' });
+/* 5. pull main */
+const pullResult = execCommand('git pull origin main');
 if (!pullResult.ok) process.exit(1);
 
-/* 5. create temp release branch */
-const checkoutResult = execCommand('git checkout -b release/tmp', {
-  stdio: 'inherit',
-});
+/* 6. create temp release branch */
+const checkoutResult = execCommand('git checkout -b release/tmp');
 if (!checkoutResult.ok) process.exit(1);
 
-/* 6. run changeset version */
-const changesetResult = execCommand('npx changeset version', {
-  stdio: 'inherit',
-});
+/* 7. run changeset version */
+const changesetResult = execCommand('npx changeset version');
 if (!changesetResult.ok) process.exit(1);
 
-/* 7. read version */
+/* 8. read version */
 let version;
 try {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
@@ -67,16 +90,12 @@ if (!version) {
 
 const releaseBranch = `release/${version}`;
 
-/* 8. rename branch */
-const renameResult = execCommand(`git branch -m ${releaseBranch}`, {
-  stdio: 'inherit',
-});
+/* 9. rename branch */
+const renameResult = execCommand(`git branch -m ${releaseBranch}`);
 if (!renameResult.ok) process.exit(1);
 
-/* 9. push branch */
-const pushResult = execCommand(`git push origin ${releaseBranch}`, {
-  stdio: 'inherit',
-});
+/* 10. push branch */
+const pushResult = execCommand(`git push origin ${releaseBranch}`);
 if (!pushResult.ok) process.exit(1);
 
 console.log(`Release branch created: ${releaseBranch}`);
