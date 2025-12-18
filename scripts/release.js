@@ -22,23 +22,32 @@ if (statusResult.output.trim().length > 0) {
   process.exit(1);
 }
 
-/* 3. pull main */
+/* 3. ensure unreleased changesets exist */
+const changesetStatusResult = execCommand('npx changeset status --since=main', {
+  stdio: 'inherit',
+});
+if (!changesetStatusResult.ok) {
+  console.error('No unreleased changesets found. Run `npx changeset` first.');
+  process.exit(1);
+}
+
+/* 4. pull main */
 const pullResult = execCommand('git pull origin main', { stdio: 'inherit' });
 if (!pullResult.ok) process.exit(1);
 
-/* 4. create temp release branch */
+/* 5. create temp release branch */
 const checkoutResult = execCommand('git checkout -b release/tmp', {
   stdio: 'inherit',
 });
 if (!checkoutResult.ok) process.exit(1);
 
-/* 5. run changeset version */
+/* 6. run changeset version */
 const changesetResult = execCommand('npx changeset version', {
   stdio: 'inherit',
 });
 if (!changesetResult.ok) process.exit(1);
 
-/* 6. read version */
+/* 7. read version */
 let version;
 try {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
@@ -55,21 +64,11 @@ if (!version) {
 
 const releaseBranch = `release/${version}`;
 
-/* 7. rename branch */
+/* 8. rename branch */
 const renameResult = execCommand(`git branch -m ${releaseBranch}`, {
   stdio: 'inherit',
 });
 if (!renameResult.ok) process.exit(1);
-
-/* 8. commit changes */
-const addResult = execCommand('git add .', { stdio: 'inherit' });
-if (!addResult.ok) process.exit(1);
-
-const commitResult = execCommand(
-  `git commit -m "chore(release): v${version}"`,
-  { stdio: 'inherit' }
-);
-if (!commitResult.ok) process.exit(1);
 
 /* 9. push branch */
 const pushResult = execCommand(`git push origin ${releaseBranch}`, {
