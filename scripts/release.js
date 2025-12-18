@@ -23,12 +23,9 @@ if (statusResult.output.trim().length > 0) {
 }
 
 /* 3. ensure unreleased changesets exist */
-const changesetStatusResult = execCommand(
-  'npx changeset status --verbose --since=main',
-  {
-    stdio: 'inherit',
-  }
-);
+const changesetStatusResult = execCommand('npx changeset status --verbose', {
+  stdio: 'inherit',
+});
 if (!changesetStatusResult.ok) {
   console.error('No unreleased changesets found. Run `npx changeset` first.');
   process.exit(1);
