@@ -20,7 +20,9 @@ const checkChangesets = async () => {
     .sort();
 
   if (changesetFiles.length === 0) {
-    console.error('No changeset files found');
+    console.error(
+      'No unreleased changesets found. Run `npm run changeset` first.'
+    );
     process.exit(1);
   }
 
@@ -57,7 +59,9 @@ await checkChangesets();
 /* 4. show changeset status (informational only) */
 const changesetStatusResult = execCommand('npx changeset status --verbose');
 if (!changesetStatusResult.ok) {
-  console.error('No unreleased changesets found. Run `npx changeset` first.');
+  console.error(
+    'No unreleased changesets found. Run `npm run changeset` first.'
+  );
   process.exit(1);
 }
 
