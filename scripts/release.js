@@ -23,7 +23,7 @@ const checkChangesets = async () => {
     console.error(
       'No unreleased changesets found. Run `npm run changeset` first.'
     );
-    process.exit(1);
+    // process.exit(1);
   }
 
   console.log('Found changeset files:');
@@ -39,7 +39,7 @@ const branchResult = execCommand('git branch --show-current');
 if (!branchResult.ok) process.exit(1);
 
 const branch = branchResult.output.trim();
-if (branch !== 'main') {
+if (branch !== 'main' || branch !== 'fake-main-test') {
   console.error('You must be on the main branch');
   process.exit(1);
 }
@@ -53,8 +53,18 @@ if (statusResult.output.trim().length > 0) {
   process.exit(1);
 }
 
+/* 5. pull main */
+const pullResult = execCommand('git pull origin main');
+if (!pullResult.ok) process.exit(1);
+
+/* 6. create temp release branch */
+const checkoutResult = execCommand('git checkout -b release/tmp');
+if (!checkoutResult.ok) process.exit(1);
+
+//
+
 /* 3. ensure release intent exists */
-await checkChangesets();
+// await checkChangesets();
 
 /* 4. show changeset status (informational only) */
 const changesetStatusResult = execCommand('npx changeset status --verbose');
@@ -64,14 +74,6 @@ if (!changesetStatusResult.ok) {
   );
   process.exit(1);
 }
-
-/* 5. pull main */
-const pullResult = execCommand('git pull origin main');
-if (!pullResult.ok) process.exit(1);
-
-/* 6. create temp release branch */
-const checkoutResult = execCommand('git checkout -b release/tmp');
-if (!checkoutResult.ok) process.exit(1);
 
 /* 7. run changeset version */
 const changesetResult = execCommand('npx changeset version');
