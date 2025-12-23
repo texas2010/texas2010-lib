@@ -1,85 +1,50 @@
 import fs from 'node:fs';
-import fsp from 'node:fs/promises';
-import path from 'node:path';
 import { execCommand } from '../utils/execCommand.js';
 
-const checkChangesets = async () => {
-  const dir = path.resolve('.changeset');
+console.log('Running Release Script...');
 
-  let files;
-  try {
-    files = await fsp.readdir(dir);
-  } catch {
-    console.error('.changeset directory is missing');
-    process.exit(1);
-  }
-
-  const changesetFiles = files
-    .filter((name) => name.endsWith('.md'))
-    .filter((name) => name.toLowerCase() !== 'readme.md')
-    .sort();
-
-  if (changesetFiles.length === 0) {
-    console.error(
-      'No unreleased changesets found. Run `npm run changeset` first.'
-    );
-    // process.exit(1);
-  }
-
-  console.log('Found changeset files:');
-  for (const name of changesetFiles) {
-    console.log(`- ${name}`);
-  }
-};
-
-console.log('Checking git state...');
-
-/* 1. ensure on main */
+/* get current git branch name */
 const branchResult = execCommand('git branch --show-current');
 if (!branchResult.ok) process.exit(1);
 
-const branch = branchResult.output.trim();
-if (branch !== 'main' || branch !== 'fake-main-test') {
+const currentBranch = branchResult.output.trim();
+
+/* allow script to run only on expected base branches */
+if (currentBranch !== 'fake-main-test' && currentBranch !== 'main') {
   console.error('You must be on the main branch');
   process.exit(1);
 }
 
-/* 2. ensure clean working tree */
-const statusResult = execCommand('git status --porcelain');
-if (!statusResult.ok) process.exit(1);
+/* check for uncommitted changes */
+const workingTreeResult = execCommand('git status --porcelain');
+if (!workingTreeResult.ok) process.exit(1);
 
-if (statusResult.output.trim().length > 0) {
+if (workingTreeResult.output.trim().length > 0) {
   console.error('Working tree is not clean');
   process.exit(1);
 }
 
-/* 5. pull main */
-const pullResult = execCommand('git pull origin main');
-if (!pullResult.ok) process.exit(1);
-
-/* 6. create temp release branch */
-const checkoutResult = execCommand('git checkout -b release/tmp');
-if (!checkoutResult.ok) process.exit(1);
-
-//
-
-/* 3. ensure release intent exists */
-// await checkChangesets();
-
-/* 4. show changeset status (informational only) */
-const changesetStatusResult = execCommand('npx changeset status --verbose');
-if (!changesetStatusResult.ok) {
-  console.error(
-    'No unreleased changesets found. Run `npm run changeset` first.'
-  );
-  process.exit(1);
+/* update local main branch */
+if (currentBranch === 'main') {
+  const pullResult = execCommand('git pull origin main');
+  if (!pullResult.ok) process.exit(1);
 }
 
-/* 7. run changeset version */
-const changesetResult = execCommand('npx changeset version');
-if (!changesetResult.ok) process.exit(1);
+/* create temporary release branch */
+const checkoutTempResult = execCommand('git checkout -b release/tmp');
+if (!checkoutTempResult.ok) process.exit(1);
 
-/* 8. read version */
+/* show current branch */
+execCommand('git branch --show-current');
+
+/* run interactive changeset prompt */
+execCommand('npx changeset', { stdio: 'inherit' });
+
+/* apply changeset version updates */
+const changesetVersionResult = execCommand('npx changeset version');
+if (!changesetVersionResult.ok) process.exit(1);
+
+/* read version from package.json */
 let version;
 try {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
@@ -96,13 +61,34 @@ if (!version) {
 
 const releaseBranch = `release/${version}`;
 
-/* 9. rename branch */
+/* rename temporary branch to versioned release branch */
 const renameResult = execCommand(`git branch -m ${releaseBranch}`);
 if (!renameResult.ok) process.exit(1);
 
-/* 10. push branch */
-const pushResult = execCommand(`git push origin ${releaseBranch}`);
-if (!pushResult.ok) process.exit(1);
+/* check working tree state before commit */
+const statusResult = execCommand('git status --porcelain');
+if (!statusResult.ok) process.exit(1);
+
+/* stage all changes */
+const trackedResult = execCommand('git add .');
+if (!trackedResult.ok) process.exit(1);
+
+/* create release commit */
+const commitResult = execCommand(`git commit -m "chore(release): v${version}"`);
+if (!commitResult.ok) process.exit(1);
+
+/* push release branch */
+if (currentBranch === 'main') {
+  const pushResult = execCommand(`git push origin ${releaseBranch}`);
+  if (!pushResult.ok) process.exit(1);
+}
+
+/* switch back to base branch */
+const checkoutMainResult = execCommand(`git checkout ${currentBranch}`);
+if (!checkoutMainResult.ok) process.exit(1);
+
+/* show current branch */
+execCommand('git branch --show-current');
 
 console.log(`Release branch created: ${releaseBranch}`);
 console.log('Open a PR to prod');
