@@ -79,7 +79,7 @@ if (!commitResult.ok) process.exit(1);
 
 /* push release branch */
 if (currentBranch === 'main') {
-  const pushResult = execCommand(`git push origin ${releaseBranch}`);
+  const pushResult = execCommand(`git push -u origin ${releaseBranch}`);
   if (!pushResult.ok) process.exit(1);
 }
 
