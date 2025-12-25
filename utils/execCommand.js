@@ -2,13 +2,12 @@ import { execSync } from 'node:child_process';
 
 export function execCommand(cmd, opts = {}) {
   try {
+    console.log(`Executing... $ ${cmd}`);
     const output = execSync(cmd, {
       stdio: 'pipe',
       encoding: 'utf-8',
       ...opts,
     });
-
-    console.log(`$ ${cmd}`);
 
     if (typeof output === 'string' && output.trim().length > 0) {
       console.log(output);
@@ -16,7 +15,7 @@ export function execCommand(cmd, opts = {}) {
 
     return { ok: true, output };
   } catch (err) {
-    console.error(`$ ${cmd}`);
+    console.error(`Execution failed: ${cmd}`);
 
     const stderr =
       err.stdout?.toString() || err.stderr?.toString() || err.message;
