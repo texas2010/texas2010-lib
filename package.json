@@ -77,9 +77,7 @@
     "ci:down": "docker compose down -v --remove-orphans",
     "ci": "npm run ci:unit && npm run ci:build && npm run ci:integration && npm run ci:down",
     "prepublishOnly": "npm run ci",
-    "changeset": "changeset",
-    "release": "node scripts/release.js",
-    "local-release": "npm run changeset && npm run release"
+    "release": "node scripts/release.js"
   },
   "engines": {
     "node": ">=20.6.0"
