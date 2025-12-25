@@ -1,5 +1,11 @@
 # @texas2010/lib
 
+## 0.0.4
+
+### Patch Changes
+
+- nothing change. just need to bump verison to release.
+
 ## 0.0.3
 
 ### Patch Changes
