@@ -26,3 +26,18 @@ Run Dev
                         node integration/setup/install-package.js
                 vitest --config vitest.config.ts --watch
     Base_dev Logs
+
+Run Local Release
+    Checking Main Branch
+    Checking Clean Working tree
+    Pulling Main Branch
+    Create New Branch - release/tmp
+    check changeset status
+    run Changeset
+        ask user which version
+        bump package file
+    Committing
+    Read package version
+    Rename Release Branch
+    Push Release Branch
+    Checkout Main Branch

@@ -1,8 +1,9 @@
 import { execSync } from 'node:child_process';
 
-export function run(cmd: string, opts: { cwd?: string } = {}) {
+export function execCommand(cmd: string, opts: { cwd?: string } = {}) {
   try {
     // Capture output
+    console.log(`Executing... $ ${cmd}`);
     const result = execSync(cmd, {
       cwd: opts.cwd,
       stdio: 'pipe', // capture stdout + stderr
@@ -17,6 +18,8 @@ export function run(cmd: string, opts: { cwd?: string } = {}) {
       output: text,
     };
   } catch (err: any) {
+    console.error(`Execution failed: ${cmd}`);
+
     const stderr = err.stderr?.toString() || '';
     const stdout = err.stdout?.toString() || '';
 
