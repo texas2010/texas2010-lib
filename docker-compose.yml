@@ -44,7 +44,7 @@ services:
       dockerfile: docker/Dockerfile.base
     environment:
       CHOKIDAR_USEPOLLING: 'true'
-      DOCKER_MODE: 'dev'
+      DOCKER_MODE: dev
     volumes:
       - ./integration:/apps/base/integration:rw
       - ./src:/apps/base/src:rw
@@ -56,7 +56,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.base
     environment:
-      DOCKER_MODE: 'test'
+      DOCKER_MODE: test
+      GITHUB_ACTIONS: ${GITHUB_ACTIONS:-false}
 
 networks:
   internal_net:

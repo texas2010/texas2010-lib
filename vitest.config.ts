@@ -5,7 +5,9 @@ const kind = process.env.TEST_KIND ?? 'unit';
 
 export default defineConfig({
   test: {
-    reporters: process.env.CI ? ['github-actions'] : ['tree'],
+    reporters: process.env.GITHUB_ACTIONS
+      ? ['tree', 'github-actions']
+      : ['tree'],
     include:
       kind === 'integration'
         ? [
