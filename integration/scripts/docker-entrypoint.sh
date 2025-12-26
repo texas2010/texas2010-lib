@@ -12,5 +12,5 @@ if [ "$DOCKER_MODE" = "test" ]; then
   exec npx vitest --config vitest.config.ts --run
 else
   echo "Vitest: Watch Mode"
-  exec npx vitest --config vitest.config.ts --watch --reporter tree
+  exec npx vitest --config vitest.config.ts --watch
 fi
