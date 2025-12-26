@@ -1,6 +1,4 @@
 x-base-common: &base-common
-  environment:
-    - TEST_KIND=integration
   networks:
     - internal_net
     - default
@@ -44,8 +42,11 @@ services:
       context: .
       dockerfile: docker/Dockerfile.base
       target: dev
-    command: npm run test:integration:watch
+    command: ['sh', './integration/scripts/docker-entrypoint.sh']
     profiles: ['dev']
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+      DOCKER_MODE: 'dev'
     volumes:
       - ./integration:/apps/base/integration:rw
       - ./src:/apps/base/src:rw
@@ -56,8 +57,10 @@ services:
       context: .
       dockerfile: docker/Dockerfile.base
       target: test
-    command: npm run test:integration
+    command: ['sh', './integration/scripts/docker-entrypoint.sh']
     profiles: ['test']
+    environment:
+      DOCKER_MODE: 'test'
 
 networks:
   internal_net:
