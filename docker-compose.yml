@@ -1,6 +1,4 @@
 x-base-common: &base-common
-  environment:
-    - TEST_KIND=integration
   networks:
     - internal_net
     - default
@@ -40,24 +38,26 @@ services:
 
   base_dev:
     <<: *base-common
+    profiles: ['dev']
     build:
       context: .
       dockerfile: docker/Dockerfile.base
-      target: dev
-    command: npm run test:integration:watch
-    profiles: ['dev']
+    environment:
+      CHOKIDAR_USEPOLLING: 'true'
+      DOCKER_MODE: dev
     volumes:
       - ./integration:/apps/base/integration:rw
       - ./src:/apps/base/src:rw
 
   base_test:
     <<: *base-common
+    profiles: ['test']
     build:
       context: .
       dockerfile: docker/Dockerfile.base
-      target: test
-    command: npm run test:integration
-    profiles: ['test']
+    environment:
+      DOCKER_MODE: test
+      GITHUB_ACTIONS: ${GITHUB_ACTIONS:-false}
 
 networks:
   internal_net:
