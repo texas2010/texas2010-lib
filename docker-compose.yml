@@ -38,12 +38,10 @@ services:
 
   base_dev:
     <<: *base-common
+    profiles: ['dev']
     build:
       context: .
       dockerfile: docker/Dockerfile.base
-      target: dev
-    command: ['sh', './integration/scripts/docker-entrypoint.sh']
-    profiles: ['dev']
     environment:
       CHOKIDAR_USEPOLLING: 'true'
       DOCKER_MODE: 'dev'
@@ -53,12 +51,10 @@ services:
 
   base_test:
     <<: *base-common
+    profiles: ['test']
     build:
       context: .
       dockerfile: docker/Dockerfile.base
-      target: test
-    command: ['sh', './integration/scripts/docker-entrypoint.sh']
-    profiles: ['test']
     environment:
       DOCKER_MODE: 'test'
 
