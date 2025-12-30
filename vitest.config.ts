@@ -1,22 +1,67 @@
 import path from 'path';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, ViteUserConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 
 const kind = process.env.TEST_KIND ?? 'unit';
 
+const browserUnitConfig = {
+  environment: 'jsdom',
+} as const;
+
+type BrowserModeConfig = Pick<NonNullable<ViteUserConfig['test']>, 'browser'>;
+
+const browserModeConfig: BrowserModeConfig = {
+  browser: {
+    provider: playwright(),
+    enabled: true,
+    headless: true,
+    instances: [
+      {
+        browser: 'chromium',
+      },
+      {
+        browser: 'webkit',
+      },
+    ],
+  },
+};
+
+const browserConfig =
+  kind === 'integration' ? browserModeConfig : browserUnitConfig;
+
+const projectsConfig = [
+  {
+    // Backend and shared
+    test: {
+      name: `node.${kind}`,
+      environment: 'node',
+      include: [
+        `src/backend/**/*.${kind}.test.ts`,
+        `src/shared/**/*.${kind}.test.ts`,
+        kind === 'integration' ? `integration/tests/**/*.${kind}.test.ts` : '',
+      ].filter((item) => item !== ''),
+    },
+  },
+  {
+    // Frontend
+    test: {
+      ...browserConfig,
+      name: `browser.${kind}`,
+      include: [
+        `src/frontend/**/*.${kind}.test.ts`,
+        `src/shared/**/*.${kind}.test.ts`,
+      ],
+    },
+  },
+];
+
 export default defineConfig({
   test: {
+    projects: projectsConfig,
     reporters: process.env.GITHUB_ACTIONS
       ? ['tree', 'github-actions']
       : ['tree'],
-    include:
-      kind === 'integration'
-        ? [
-            'src/**/*.integration.test.ts',
-            'integration/**/*.integration.test.ts',
-          ]
-        : ['src/**/*.unit.test.ts'],
     exclude: ['node_modules', 'build'],
-    environment: 'node',
     globals: true,
     clearMocks: true,
     restoreMocks: true,

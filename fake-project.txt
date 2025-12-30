@@ -41,3 +41,39 @@ Run Local Release
     Rename Release Branch
     Push Release Branch
     Checkout Main Branch
+
+
+Testing File name
+    *.frontend.unit.test.ts
+    *.backend.unit.test.ts
+    *.node.unit.test.ts
+    *.jsdom.unit.test.ts
+
+    [env].[test-kind].test.ts
+
+Kind of Testing
+    Unit
+        Backend
+            node
+        FrontEnd
+            jsdom
+    Integration
+        Backend
+            node
+        Frontend
+            Vitest Browser Mode
+
+packages/
+    src/
+        backend/
+            foo.ts
+            foo.unit.test.ts // node
+            foo.integration.test.ts // node
+        frontend/
+            baz.ts
+            baz.unit.test.ts        // jsdom
+            baz.integration.test.ts // browser mode
+        shared/
+            bar.ts 
+            bar.unit.test.ts // node
+            bar.integration.test.ts // node
