@@ -103,6 +103,8 @@
   },
   "dependencies": {
     "@types/node": "^22.15.14",
+    "cloudevents": "^10.0.0",
+    "nats": "^2.29.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
