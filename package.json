@@ -81,6 +81,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.26.0",
+    "@types/node": "^25.9.1",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "@vitejs/plugin-react": "^5.1.1",
@@ -102,7 +103,6 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
-    "@types/node": "^22.15.14",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
