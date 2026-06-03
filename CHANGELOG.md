@@ -1,5 +1,11 @@
 # @texas2010/lib
 
+## 0.1.0
+
+### Minor Changes
+
+- add JsonFile Class
+
 ## 0.0.4
 
 ### Patch Changes
