@@ -29,7 +29,7 @@ npm run dev
 ## Run tests
 
 ```sh
-npm run test
+npm run ci
 ```
 
 ## Author
